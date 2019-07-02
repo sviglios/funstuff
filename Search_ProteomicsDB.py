@@ -48,7 +48,7 @@ for acc in accs:
     time.sleep(3)
     
     resp = requests.get("https://www.proteomicsdb.org/proteomicsdb/logic/api/proteinproteotypicity.xsodata/InputParams(PROTEINFILTER='"+acc+"',LABEL_TYPES='SILAC')/Results?$select=UNIQUE_IDENTIFIER,RANK_ORDER,PEPTIDE_ID,PSMS,OCCURRENCE,PROTEOTYPICITY,CUM_PROTEOTYPICITY,GENE_COUNT,IDENTIFIER_COUNT,SEQUENCE,UNIQUENESS&$format=json")    
-    if resp.status_code == 200:
+    if resp.status_code == 200: #a better way could also be {if resp.ok:}
         print('\nRecieved response, request successful')
     else:
         print('\nSomething went wrong, try again')
