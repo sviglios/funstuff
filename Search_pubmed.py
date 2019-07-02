@@ -17,7 +17,7 @@ from Bio import Medline
 print('This script retrieves pubmed IDs from the term of interest\n')
 
 #input vars
-Entrez.email = input('Email (NCBI requirements): ') #"example@email.com" # Always tell NCBI who you are
+Entrez.email = input('Email (NCBI requirements): ') # Always tell NCBI who you are
 database = input('NCBI Database to search: ')
 term = input('Term to search: ')
 maxres = input('Max number of returned results: ')
@@ -26,7 +26,7 @@ maxdate = input('Date upper limit (press enter for default): ')
 
 # =============================================================================
 # #testing
-# Entrez.email = 'konka@dtu.dk'
+# Entrez.email = 'example@email.com'
 # database = 'pubmed'
 # term = 'heart disease'
 # maxres = 25
