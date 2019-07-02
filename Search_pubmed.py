@@ -63,7 +63,7 @@ if database != 'pubmed':
 else:    
     print(f'\nExtracted {len(idlist)} ids. Database is pubmed, requesting records.')
     
-    print('Getting entries records..')
+    print('\nGetting entries records..\n')
     
     handle = Entrez.efetch(db='pubmed', id=idlist, rettype='medline', retmode='text')
     records = Medline.parse(handle)
@@ -119,10 +119,10 @@ else:
     #make df to write
     pd.set_option("display.max_colwidth", 150)
     df = pd.DataFrame(data,columns=cols)
-    df.index = [i+1 for i in list(df.index)]
     
     #sort by citations
     df = df.sort_values("Citations", ascending=False)
+    df.index = [i+1 for i in range(len(df))]
     
     fh.write(df.to_string(justify='justify-all'))
     
