@@ -96,6 +96,12 @@ else:
             pmc_ids = []
         else:
             pmc_ids = [link["Id"] for link in citations[0]["LinkSetDb"][0]["Link"]]
+
+        if rec['AU']:
+            authors = rec["AU"]
+
+        else:
+            authors = "No authors found"
         
         data.append([rec['PMID'], 
                      date,
