@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Jul  1 12:38:14 2019
-
 @author: Kostas
 """
 
@@ -61,8 +60,8 @@ if database != 'pubmed':
         fh.write(str(i)+'\n')
     fh.close()
 
-else:
-    print(f'\nExtracted {len(idlist)} ids')
+else:    
+    print(f'\nExtracted {len(idlist)} ids. Database is pubmed, requesting records.')
     
     print('Getting entries records..')
     
