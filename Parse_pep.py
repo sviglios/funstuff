@@ -5,7 +5,14 @@ Created on Wed Jul  3 10:06:03 2019
 @author: Kostas
 """
 
+"""FILTERS TO ADD"""
+"""Peptide length 7-22"""
+"""Lysine or arginine allowed only in the last residue"""
+"""Query Proteomics DB API for the peptide information"""
+ 
 import pandas as pd
+
+accs = ['P14780','P08253']
 
 accs = []
 fh = open('prot.txt','r')
@@ -23,14 +30,16 @@ for acc in accs:
     pdb = 1
     
     try:
-        df_ebi = pd.read_excel('Files/Sim/EBI_DB/'+acc+'ebi.xlsx')
+        #df_ebi = pd.read_excel('Files/Sim/EBI_DB/'+acc+'ebi.xlsx')
+        df_ebi = pd.read_excel(acc+'ebi.xlsx')
         df_ebi = df_ebi.loc[~df_ebi.peptide.duplicated(keep='first')]
     except:
         print(f'No file for {acc} in EBI')
         eb = 0
     
     try:
-        df_pdb = pd.read_excel('Files/Sim/RefProtDB/'+acc+'refpepprotDB.xlsx')
+        #df_pdb = pd.read_excel('Files/Sim/RefProtDB/'+acc+'refpepprotDB.xlsx')
+        df_pdb = pd.read_excel(acc+'refpepprotDB.xlsx')
         df_pdb = df_pdb.loc[~df_pdb.SEQUENCE.duplicated(keep='first')]
     except:
         print(f'No file for {acc} in protDB')
@@ -148,6 +157,10 @@ for acc in accs:
             df_both = df_ebisel2[df_ebisel2.peptide.isin(list(new_seq))]
             df_both['proteotypic'] = list(df_pdb[df_pdb.SEQUENCE.isin(list(new_seq))]['CUM_PROTEOTYPICITY'])
             df_both['uniqueness'] = list(df_pdb[df_pdb.SEQUENCE.isin(list(new_seq))]['UNIQUENESS'])
+            df_both['score'] = list(df_pdb[df_pdb.SEQUENCE.isin(list(new_seq))]['SCORE'])
+            df_both['intensity'] = list(df_pdb[df_pdb.SEQUENCE.isin(list(new_seq))]['INTENSITY'])
+            df_both['q_value'] = list(df_pdb[df_pdb.SEQUENCE.isin(list(new_seq))]['Q_VALUE'])
+            
             maxdf = max(df_both['end'])
             mindf = min(df_both['begin'])
             
@@ -173,4 +186,5 @@ for acc in accs:
             fh_out.write(df_both.to_string(justify='left',index=False))
             fh_out.write('\n===================================================\n\n')
     count += 1
-                    
+ 
+fh_out.close()                   
