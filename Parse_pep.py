@@ -20,6 +20,15 @@ for line in fh:
     line = line.strip()
     accs.append(line)
 
+def pepconv(seq):
+    pos = len(pep) - 1
+    fl = 0
+    for a in range(len(pep)):
+        if pep[a] == 'R' or pep[a] == 'K':
+            if pos != a:
+                fl = 1
+    return fl
+
 fh_out = open('Final_peptides.txt','w')
 
 count = 1    
@@ -59,12 +68,27 @@ for acc in accs:
         
         print(f'Cound not find peptides in proteomics DB for {acc}. Picking from EBI only')
         fh_out.write(f'\nCound not find peptides in proteomics DB for {acc}. Picking from EBI only')
-        
+            
         df_ebisel = df_ebi[df_ebi['unique'] == True]
         df_ebisel['db number'] = [len(sp.split(',')) for sp in df_ebisel['database']]
         df_ebisel2 = df_ebisel[df_ebisel['db number'] == 4]
         cutoff = 3
         
+        dec = 0
+        for r in range(len(df_ebisel2)):
+            r  -= dec 
+            ind = df_ebisel2.index[r]
+            pep = df_ebisel2.peptide[ind]
+            fl = pepconv(pep)
+            if fl == 1:
+                print(f'Removing {pep} for {acc}, contains R/K')
+                df_ebisel2 = df_ebisel2.drop(ind)
+                dec += 1
+            elif len(pep) > 22 or len(pep) < 7:
+                print(f'Removing {pep} for {acc}, too small/big')
+                df_ebisel2 = df_ebisel2.drop(ind)
+                dec += 1
+                
         while len(df_ebisel2) < 3:
             print(f'Less than 3 peptides in EBI, accession {acc}')
             df_ebisel2 = df_ebisel[df_ebisel['db number'] >= cutoff]
@@ -98,6 +122,8 @@ for acc in accs:
                     df_ebisel2 = df_ebisel2.sample(3)
         
         print(acc,' ',len(df_ebisel2))
+        df_ebisel2 = df_ebisel2.drop('db number',axis = 1)
+        
         fh_out.write('\n\n')
         fh_out.write(df_ebisel2.to_string(justify='left',index=False))
         fh_out.write('\n===================================================\n\n')
@@ -115,10 +141,24 @@ for acc in accs:
             print(f'{len(df_ebisel2)} for {acc} including peptides with {cutoff} databases')
             cutoff -= 1
         print(f'{acc}\t{len(df_ebisel2)}')
+            
+        dec = 0
+        for r in range(len(df_ebisel2)):
+            r  -= dec 
+            ind = df_ebisel2.index[r]
+            pep = df_ebisel2.peptide[ind]
+            fl = pepconv(pep)
+            if fl == 1:
+                print(f'Removing {pep} for {acc}, contains R/K')
+                df_ebisel2 = df_ebisel2.drop(ind)
+                dec += 1
+            elif len(pep) > 22 or len(pep) < 7:
+                print(f'Removing {pep} for {acc}, too small/big')
+                df_ebisel2 = df_ebisel2.drop(ind)
+                dec += 1
         
         seq1 = set(df_ebisel2['peptide'])
         seq2 = set(df_pdb['SEQUENCE'])
-        
         new_seq = seq1.intersection(seq2)
             
         if len(new_seq) < 3:            
@@ -148,6 +188,8 @@ for acc in accs:
                         df_ebisel2 = df_ebisel2.sample(3)
                 
                         print(acc,' ',len(df_ebisel2))
+            
+            df_ebisel2 = df_ebisel2.drop('db number',axis = 1)
             
             fh_out.write('\n\n')
             fh_out.write(df_ebisel2.to_string(justify='left',index=False))
@@ -182,9 +224,12 @@ for acc in accs:
                     df_both = df_both[df_both.peptide.isin(sel)]
                 
             print(acc,' ',len(df_both))
+            df_both = df_both.drop('db number',axis = 1)
+            
             fh_out.write('\n\n')
             fh_out.write(df_both.to_string(justify='left',index=False))
             fh_out.write('\n===================================================\n\n')
+    
     count += 1
  
 fh_out.close()                   
